@@ -1,25 +1,25 @@
 /** @jsx h */
-import { h } from "preact";
-import { tw } from "@twind";
-import { Handlers, PageProps, RouteConfig } from "$fresh/server.ts";
-import { BlameOutput, gitBlame, gitShow } from "../lib/gitcli.ts";
-import { Head } from "$fresh/runtime.ts";
+import { h } from 'preact'
+import { tw } from '@twind'
+import { Handlers, PageProps, RouteConfig } from '$fresh/server.ts'
+import { BlameOutput, gitBlame, gitShow } from '../lib/gitcli.ts'
+import { Head } from '$fresh/runtime.ts'
 
 export const config: RouteConfig = {
-  routeOverride: "/blame/:ref/:path*",
-};
+  routeOverride: '/blame/:ref/:path*',
+}
 
 export const handler: Handlers<BlameOutput> = {
   async GET(req, ctx) {
-    const { ref, path } = ctx.params;
-    const blame = await gitBlame({ ref, path });
-    return ctx.render(blame);
+    const { ref, path } = ctx.params
+    const blame = await gitBlame({ ref, path })
+    return ctx.render(blame)
   },
-};
+}
 
 export default function Home({ data, params }: PageProps<BlameOutput>) {
-  const { path } = params;
-  const { hunks, commits } = data;
+  const { path } = params
+  const { hunks, commits } = data
   return (
     <div className="page">
       <Head>
@@ -29,7 +29,7 @@ export default function Home({ data, params }: PageProps<BlameOutput>) {
       <table>
         <tbody>
           {hunks.map((hunk, idx) => {
-            const commit = commits[hunk.sha];
+            const commit = commits[hunk.sha]
             return (
               <tr key={idx} class={tw`border`}>
                 <td class={tw`align-top`}>
@@ -49,10 +49,10 @@ export default function Home({ data, params }: PageProps<BlameOutput>) {
                   ))}
                 </td>
               </tr>
-            );
+            )
           })}
         </tbody>
       </table>
     </div>
-  );
+  )
 }

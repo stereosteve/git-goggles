@@ -1,60 +1,60 @@
-import { gitcli, parseCommits, Commit } from "./gitcli.ts";
+import { gitcli, parseCommits, Commit } from './gitcli.ts'
 
 type LsTreeParams = {
-  ref: string;
-  prefix?: string;
-  attachLatestCommit?: boolean;
-};
+  ref: string
+  prefix?: string
+  attachLatestCommit?: boolean
+}
 
 export type TreeNode = {
-  mode: string;
-  kind: "tree" | "blob";
-  sha: string;
-  size: number;
-  path: string;
+  mode: string
+  kind: 'tree' | 'blob'
+  sha: string
+  size: number
+  path: string
 
-  commit?: Commit;
-};
+  commit?: Commit
+}
 
 export async function gitLsTree({
   ref,
   prefix,
   attachLatestCommit,
 }: LsTreeParams): Promise<TreeNode[]> {
-  prefix = prefix || ".";
-  const out = await gitcli(["ls-tree", "-l", ref, prefix]);
+  prefix = prefix || '.'
+  const out = await gitcli(['ls-tree', '-l', ref, prefix])
   const nodes = out
     .trim()
-    .split("\n")
+    .split('\n')
     .map((l) => {
-      const [mode, kind, sha, size, path] = l.split(/\s+/);
+      const [mode, kind, sha, size, path] = l.split(/\s+/)
       return {
         mode,
         kind,
         sha,
         size: parseInt(size),
         path,
-      } as TreeNode;
-    });
+      } as TreeNode
+    })
 
   if (attachLatestCommit) {
-    await attachLatestCommitToTreeNodes(nodes);
+    await attachLatestCommitToTreeNodes(nodes)
   }
-  return nodes;
+  return nodes
 }
 
 async function attachLatestCommitToTreeNodes(nodes: TreeNode[]) {
   return await Promise.all(
     nodes.map(async (node) => {
       const out = await gitcli([
-        "log",
-        "--format=raw",
-        "-n",
-        "1",
-        "--",
+        'log',
+        '--format=raw',
+        '-n',
+        '1',
+        '--',
         node.path,
-      ]);
-      node.commit = parseCommits(out)[0];
+      ])
+      node.commit = parseCommits(out)[0]
     })
-  );
+  )
 }

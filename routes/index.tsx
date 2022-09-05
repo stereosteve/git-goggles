@@ -1,7 +1,6 @@
 /** @jsx h */
-import { h } from "preact";
-import { tw } from "@twind";
-import Counter from "../islands/Counter.tsx";
+import { h } from 'preact'
+import { tw } from '@twind'
 
 export default function Home() {
   return (
@@ -16,9 +15,10 @@ export default function Home() {
           <a href="/log">log</a> <br />
         </li>
         <li>
-          <a href="/tree/master">tree</a> <br />
+          <a href="/tree/master">tree</a> (todo: how to determine default
+          branch)
         </li>
       </ul>
     </div>
-  );
+  )
 }
