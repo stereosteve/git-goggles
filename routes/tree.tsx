@@ -3,59 +3,51 @@ import { h } from 'preact'
 import { tw } from '@twind'
 import { Handlers, PageProps, RouteConfig } from '$fresh/server.ts'
 import { gitLsTree, TreeNode } from '../lib/gitLsTree.ts'
+import { Breadcrumbs } from '../components/Breadcrumbs.tsx'
 
 export const config: RouteConfig = {
-  routeOverride: '/:stuff*/tree/:ref/:prefix*',
+  routeOverride: '/:stuff*/tree/:ref/:path*',
 }
 
 export const handler: Handlers<TreeNode[]> = {
   async GET(req, ctx) {
-    let { ref, prefix } = ctx.params
-    if (prefix && !prefix.endsWith('/')) prefix += '/'
+    let { ref, path } = ctx.params
+    if (path && !path.endsWith('/')) path += '/'
 
     const tree = await gitLsTree({
       ref,
-      prefix,
+      prefix: path,
       attachLatestCommit: true,
     })
+
+    if (!tree.length) {
+      // on empty tree assume it's a file and redirect to blob
+      return Response.redirect(req.url.replace('/tree/', '/blob/'))
+    }
+
     return ctx.render(tree)
   },
 }
 
-export default function Home({ data, url, params }: PageProps<TreeNode[]>) {
-  let { stuff, ref, prefix } = params
-  const segments = prefix.split('/')
+export default function Tree({ data, url, params }: PageProps<TreeNode[]>) {
+  let { stuff, ref, path } = params
   const treeRoot = `/${stuff}/tree/${ref}/`.replace('//', '/')
 
-  if (prefix && !prefix.endsWith('/')) prefix += '/'
+  if (path && !path.endsWith('/')) path += '/'
 
   const tree = data
   const dirs = tree.filter((n) => n.kind === 'tree')
   const files = tree.filter((n) => n.kind === 'blob')
 
-  const crumbs2 = segments.map((seg, idx) => (
-    <a
-      class={tw(`m-2 text-purple-800`)}
-      href={treeRoot + segments.slice(0, idx + 1).join('/')}
-    >
-      {seg}
-    </a>
-  ))
-
   return (
     <div>
-      <div class={tw`p-2 border bg-gray-100`}>
-        <a href={treeRoot}>root</a>
-        {crumbs2}
-      </div>
+      <Breadcrumbs params={params} />
       <table>
         <tbody>
           {dirs.map((t, idx) => (
             <tr key={idx}>
               <td>
-                <a href={`${treeRoot}${t.path}`}>
-                  {t.path.replace(prefix, '')}/
-                </a>
+                <a href={`${treeRoot}${t.path}`}>{t.path.replace(path, '')}/</a>
               </td>
               <td class={tw`text-xs`}>{t.commit?.summary}</td>
               <td></td>
@@ -63,14 +55,17 @@ export default function Home({ data, url, params }: PageProps<TreeNode[]>) {
             </tr>
           ))}
           {files.map((t, idx) => (
-            <tr key={idx}>
+            <tr class={tw`hover:bg-yellow-100`}>
               <td>
-                <a href={`/show/${t.sha}`}>{t.path.replace(prefix, '')}</a>
+                <a href={`/blob/${ref}/${t.path}`}>
+                  {t.path.replace(path, '')}
+                </a>
               </td>
-              <td class={tw`text-xs`}>{t.commit?.summary}</td>
-              <td class={tw`text-xs`}>{t.size}</td>
-              <td>
+              <td class={tw`text-xs px-2`}>{t.commit?.summary}</td>
+              <td class={tw`text-xs px-2 text-right `}>{t.size}</td>
+              <td class={tw`text-xs px-2`}>
                 <a href={`/commits/${ref}/${t.path}`}>log</a>
+                {` `}
                 <a href={`/blame/${ref}/${t.path}`}>blame</a>
               </td>
             </tr>

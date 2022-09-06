@@ -24,8 +24,15 @@ export async function gitcli(args: string[]) {
   return stdout
 }
 
-export async function gitShow({ sha }: { sha: string }) {
-  const blob = await gitcli(['show', sha])
+export type GitShowArgs = {
+  sha?: string
+  ref?: string
+  path?: string
+}
+
+export async function gitShow({ sha, ref, path }: GitShowArgs) {
+  const arg = sha ? sha : `${ref}:${path}`
+  const blob = await gitcli(['show', arg])
   return blob
 }
 

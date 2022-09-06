@@ -16,7 +16,7 @@ export const handler: Handlers<string> = {
   },
 }
 
-export default function Home({ data }: PageProps<string>) {
+export default function Show({ data }: PageProps<string>) {
   return (
     <div class={tw`p-4`}>
       <pre>{data}</pre>

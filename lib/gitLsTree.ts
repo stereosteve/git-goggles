@@ -26,6 +26,7 @@ export async function gitLsTree({
   const nodes = out
     .trim()
     .split('\n')
+    .filter(Boolean)
     .map((l) => {
       const [mode, kind, sha, size, path] = l.split(/\s+/)
       return {

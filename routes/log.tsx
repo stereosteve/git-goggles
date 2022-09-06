@@ -4,6 +4,7 @@ import { tw } from '@twind'
 import { Handlers, PageProps, RouteConfig } from '$fresh/server.ts'
 import { gitLog } from '../lib/gitLog.ts'
 import { Commit } from '../lib/gitcli.ts'
+import { Breadcrumbs } from '../components/Breadcrumbs.tsx'
 
 export const config: RouteConfig = {
   routeOverride: '/commits/:ref/:path*',
@@ -23,10 +24,11 @@ export const handler: Handlers<Commit[]> = {
   },
 }
 
-export default function Home({ data }: PageProps<Commit[]>) {
+export default function Log({ data, params }: PageProps<Commit[]>) {
   const log = data
   return (
     <div>
+      <Breadcrumbs params={params} />
       <div>{log.length} commits</div>
       <div>
         {data.map((commit) => {

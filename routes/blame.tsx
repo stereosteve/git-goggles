@@ -4,6 +4,7 @@ import { tw } from '@twind'
 import { Handlers, PageProps, RouteConfig } from '$fresh/server.ts'
 import { BlameOutput, gitBlame, gitShow } from '../lib/gitcli.ts'
 import { Head } from '$fresh/runtime.ts'
+import { Breadcrumbs } from '../components/Breadcrumbs.tsx'
 
 export const config: RouteConfig = {
   routeOverride: '/blame/:ref/:path*',
@@ -17,7 +18,7 @@ export const handler: Handlers<BlameOutput> = {
   },
 }
 
-export default function Home({ data, params }: PageProps<BlameOutput>) {
+export default function Blame({ data, params }: PageProps<BlameOutput>) {
   const { path } = params
   const { hunks, commits } = data
   return (
@@ -25,15 +26,19 @@ export default function Home({ data, params }: PageProps<BlameOutput>) {
       <Head>
         <title>Blame: {path}</title>
       </Head>
-      <h1>Blame {path}</h1>
+      <Breadcrumbs params={params} />
       <table>
         <tbody>
           {hunks.map((hunk, idx) => {
             const commit = commits[hunk.sha]
             return (
               <tr key={idx} class={tw`border`}>
-                <td class={tw`align-top`}>
-                  <a href={`/log?author=${encodeURIComponent(commit.author)}`}>
+                <td class={tw`align-top whitespace-nowrap`}>
+                  <a
+                    href={`/commits?author=${encodeURIComponent(
+                      commit.author
+                    )}`}
+                  >
                     <b>{commit.author}</b>
                   </a>
                   {` `}
