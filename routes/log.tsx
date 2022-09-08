@@ -31,34 +31,35 @@ export default function Log({ data, params }: PageProps<Commit[]>) {
       <Breadcrumbs params={params} />
       <div>{log.length} commits</div>
       <div>
-        {data.map((commit) => {
-          return (
-            <div
-              key={commit.sha}
-              style={{ margin: 20, border: '2px solid purple' }}
-            >
-              <div>
-                Commit: <a href={`/show/${commit.sha}`}>{commit.sha}</a>
-              </div>
-              <div>
-                Browse: <a href={`/stuff/tree/${commit.sha}`}>{commit.tree}</a>
-              </div>
-              <div>
-                WHO:
-                <a href={`?author=${encodeURIComponent(commit.author)}`}>
-                  {commit.author}
-                </a>
-                -- {commit.authorEmail}
-              </div>
-              <div>
-                WHEN: {commit.authorTime} {commit.authorTz}
-              </div>
-
-              <pre>{commit.summary}</pre>
-            </div>
-          )
-        })}
+        {data.map((commit) => (
+          <CommitUI commit={commit} />
+        ))}
       </div>
+    </div>
+  )
+}
+
+export function CommitUI({ commit }: { commit: Commit }) {
+  return (
+    <div style={{ margin: 20, border: '2px solid purple' }}>
+      <div>
+        Commit: <a href={`/commit/${commit.sha}`}>{commit.sha}</a>
+      </div>
+      <div>
+        Browse: <a href={`/stuff/tree/${commit.sha}`}>{commit.tree}</a>
+      </div>
+      <div>
+        WHO:
+        <a href={`?author=${encodeURIComponent(commit.author)}`}>
+          {commit.author}
+        </a>
+        -- {commit.authorEmail}
+      </div>
+      <div>
+        WHEN: {commit.authorTime} {commit.authorTz}
+      </div>
+
+      <pre>{commit.summary}</pre>
     </div>
   )
 }

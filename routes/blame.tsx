@@ -22,7 +22,7 @@ export default function Blame({ data, params }: PageProps<BlameOutput>) {
   const { path } = params
   const { hunks, commits } = data
   return (
-    <div className="page">
+    <div class="">
       <Head>
         <title>Blame: {path}</title>
       </Head>
@@ -32,7 +32,7 @@ export default function Blame({ data, params }: PageProps<BlameOutput>) {
           {hunks.map((hunk, idx) => {
             const commit = commits[hunk.sha]
             return (
-              <tr key={idx} class={tw`border`}>
+              <tr key={idx} class={tw`border dark:text-green-500`}>
                 <td class={tw`align-top whitespace-nowrap`}>
                   <a
                     href={`/commits?author=${encodeURIComponent(
