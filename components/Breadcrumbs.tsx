@@ -1,7 +1,3 @@
-/** @jsx h */
-import { h } from 'preact'
-import { tw } from '@twind'
-
 export function Breadcrumbs({ params }: { params: Record<string, string> }) {
   const { ref, path } = params
   const segments = path.split('/')
@@ -9,7 +5,7 @@ export function Breadcrumbs({ params }: { params: Record<string, string> }) {
 
   const crumbs2 = segments.map((seg, idx) => (
     <a
-      class={tw(`m-2 text-purple-800`)}
+      class="m-2 text-purple-800"
       href={treeRoot + segments.slice(0, idx + 1).join('/')}
     >
       {seg}
@@ -17,7 +13,7 @@ export function Breadcrumbs({ params }: { params: Record<string, string> }) {
   ))
 
   return (
-    <div class={tw`p-2 border bg-gray-100`}>
+    <div class="p-2 border bg-gray-100">
       <a href={treeRoot}>root</a>
       {crumbs2}
     </div>

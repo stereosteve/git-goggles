@@ -1,6 +1,3 @@
-/** @jsx h */
-import { h } from 'preact'
-import { tw } from '@twind'
 import { Handlers, PageProps, RouteConfig } from '$fresh/server.ts'
 import { gitLog } from '../lib/gitLog.ts'
 import { Commit } from '../lib/gitcli.ts'

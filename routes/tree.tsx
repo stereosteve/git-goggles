@@ -1,6 +1,3 @@
-/** @jsx h */
-import { h } from 'preact'
-import { tw } from '@twind'
 import { Handlers, PageProps, RouteConfig } from '$fresh/server.ts'
 import { gitLsTree, TreeNode } from '../lib/gitLsTree.ts'
 import { Breadcrumbs } from '../components/Breadcrumbs.tsx'
@@ -49,21 +46,21 @@ export default function Tree({ data, url, params }: PageProps<TreeNode[]>) {
               <td>
                 <a href={`${treeRoot}${t.path}`}>{t.path.replace(path, '')}/</a>
               </td>
-              <td class={tw`text-xs`}>{t.commit?.summary}</td>
+              <td class="text-xs">{t.commit?.summary}</td>
               <td></td>
               <td></td>
             </tr>
           ))}
           {files.map((t, idx) => (
-            <tr class={tw`hover:bg-yellow-100`}>
+            <tr class="hover:bg-yellow-100">
               <td>
                 <a href={`/blob/${ref}/${t.path}`}>
                   {t.path.replace(path, '')}
                 </a>
               </td>
-              <td class={tw`text-xs px-2`}>{t.commit?.summary}</td>
-              <td class={tw`text-xs px-2 text-right `}>{t.size}</td>
-              <td class={tw`text-xs px-2`}>
+              <td class="text-xs px-2">{t.commit?.summary}</td>
+              <td class="text-xs px-2 text-right ">{t.size}</td>
+              <td class="text-xs px-2">
                 <a href={`/commits/${ref}/${t.path}`}>log</a>
                 {` `}
                 <a href={`/blame/${ref}/${t.path}`}>blame</a>

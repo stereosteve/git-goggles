@@ -1,6 +1,3 @@
-/** @jsx h */
-import { h } from 'preact'
-import { tw } from '@twind'
 import { Handlers, PageProps, RouteConfig } from '$fresh/server.ts'
 import { gitcli } from '../lib/gitcli.ts'
 
@@ -16,13 +13,13 @@ export const handler: Handlers<string> = {
 export default function Home({ data }: PageProps<string>) {
   const branch = data
   return (
-    <div class={tw`p-4 mx-auto max-w-screen-md`}>
+    <div class="p-4 mx-auto max-w-screen-md">
       <img
         src="/logo.svg"
         height="100px"
         alt="the fresh logo: a sliced lemon dripping with juice"
       />
-      <h1 class={tw`text-xl my-2 font-bold`}>on: {branch}</h1>
+      <h1 class="text-xl my-2 font-bold">on: {branch}</h1>
       <ul>
         <li>
           <a href={`/commits/${branch}`}>log</a> <br />

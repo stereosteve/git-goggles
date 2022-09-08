@@ -1,6 +1,3 @@
-/** @jsx h */
-import { h } from 'preact'
-import { tw } from '@twind'
 import { Handlers, PageProps, RouteConfig } from '$fresh/server.ts'
 import { gitShow } from '../lib/gitcli.ts'
 
@@ -18,7 +15,7 @@ export const handler: Handlers<string> = {
 
 export default function Show({ data }: PageProps<string>) {
   return (
-    <div class={tw`p-4`}>
+    <div class="p-4">
       <pre>{data}</pre>
     </div>
   )

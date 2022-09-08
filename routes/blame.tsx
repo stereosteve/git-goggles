@@ -1,9 +1,5 @@
-/** @jsx h */
-import { h } from 'preact'
-import { tw } from '@twind'
 import { Handlers, PageProps, RouteConfig } from '$fresh/server.ts'
 import { BlameOutput, gitBlame, gitShow } from '../lib/gitcli.ts'
-import { Head } from '$fresh/runtime.ts'
 import { Breadcrumbs } from '../components/Breadcrumbs.tsx'
 import { Layout } from '../components/Layout.tsx'
 
@@ -30,8 +26,8 @@ export default function Blame({ data, params }: PageProps<BlameOutput>) {
           {hunks.map((hunk, idx) => {
             const commit = commits[hunk.sha]
             return (
-              <tr key={idx} class={tw`border dark:text-green-500`}>
-                <td class={tw`align-top whitespace-nowrap`}>
+              <tr key={idx} class="border dark:text-green-500">
+                <td class="align-top whitespace-nowrap">
                   <a
                     href={`/commits?author=${encodeURIComponent(
                       commit.author

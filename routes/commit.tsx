@@ -1,6 +1,4 @@
-/** @jsx h */
-import { h } from 'preact'
-import { tw } from '@twind'
+import { tw } from 'twind'
 import { Handlers, PageProps, RouteConfig } from '$fresh/server.ts'
 import { Commit } from '../lib/gitcli.ts'
 import { Breadcrumbs } from '../components/Breadcrumbs.tsx'
@@ -33,14 +31,14 @@ export default function Blob({ data, params }: PageProps<DataStruct>) {
   const { commit, diff } = data
   return (
     <Layout title={`Commit: ${commit.summary}`}>
-      <div class={tw`bg-gray-50`}>
+      <div class="bg-gray-50">
         <CommitUI commit={commit} />
         {diff.map((diffFile) => (
           <div
-            class={tw`bg-white mx-8 my-10 border-2 border-blue-400 rounded-xl overflow-hidden shadow-xl`}
+            class="bg-white mx-8 my-10 border-2 border-blue-400 rounded-xl overflow-hidden shadow-xl"
           >
-            <div class={tw`p-3 bg-blue-50 flex justify-between`}>
-              <div class={tw`font-bold`}>{diffFile.filename}</div>
+            <div class="p-3 bg-blue-50 flex justify-between">
+              <div class="font-bold">{diffFile.filename}</div>
               <div>
                 {!diffFile.isNew && (
                   <a href={`/blob/${commit.parent}/${diffFile.filename}`}>
@@ -56,7 +54,7 @@ export default function Blob({ data, params }: PageProps<DataStruct>) {
             <div>
               {diffFile.lines.map((line) => (
                 <pre class={tw`${diffLineClass(line)}`}>
-                  <span class={tw`select-none text-gray-500`}>
+                  <span class="select-none text-gray-500">
                     {line.charAt(0)}
                   </span>
                   {line.substring(1)}
