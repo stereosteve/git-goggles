@@ -1,8 +1,20 @@
 /** @jsx h */
 import { h } from 'preact'
 import { tw } from '@twind'
+import { Handlers, PageProps, RouteConfig } from '$fresh/server.ts'
+import { gitcli } from '../lib/gitcli.ts'
 
-export default function Home() {
+export const handler: Handlers<string> = {
+  async GET(req, ctx) {
+    // NB this won't work on "baseless" checkout...
+    const branchOutput = await gitcli(['branch'])
+    const branch = branchOutput.replace('* ', '')
+    return ctx.render(branch)
+  },
+}
+
+export default function Home({ data }: PageProps<string>) {
+  const branch = data
   return (
     <div class={tw`p-4 mx-auto max-w-screen-md`}>
       <img
@@ -10,13 +22,13 @@ export default function Home() {
         height="100px"
         alt="the fresh logo: a sliced lemon dripping with juice"
       />
+      <h1 class={tw`text-xl my-2 font-bold`}>on: {branch}</h1>
       <ul>
         <li>
-          <a href="/log">log</a> <br />
+          <a href={`/commits/${branch}`}>log</a> <br />
         </li>
         <li>
-          <a href="/tree/master">tree</a> (todo: how to determine default
-          branch)
+          <a href={`/tree/${branch}`}>tree</a>
         </li>
       </ul>
     </div>

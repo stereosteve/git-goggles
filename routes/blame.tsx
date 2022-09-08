@@ -5,6 +5,7 @@ import { Handlers, PageProps, RouteConfig } from '$fresh/server.ts'
 import { BlameOutput, gitBlame, gitShow } from '../lib/gitcli.ts'
 import { Head } from '$fresh/runtime.ts'
 import { Breadcrumbs } from '../components/Breadcrumbs.tsx'
+import { Layout } from '../components/Layout.tsx'
 
 export const config: RouteConfig = {
   routeOverride: '/blame/:ref/:path*',
@@ -22,10 +23,7 @@ export default function Blame({ data, params }: PageProps<BlameOutput>) {
   const { path } = params
   const { hunks, commits } = data
   return (
-    <div class="">
-      <Head>
-        <title>Blame: {path}</title>
-      </Head>
+    <Layout title={`blame: ${path}`}>
       <Breadcrumbs params={params} />
       <table>
         <tbody>
@@ -58,6 +56,6 @@ export default function Blame({ data, params }: PageProps<BlameOutput>) {
           })}
         </tbody>
       </table>
-    </div>
+    </Layout>
   )
 }

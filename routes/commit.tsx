@@ -7,6 +7,7 @@ import { Breadcrumbs } from '../components/Breadcrumbs.tsx'
 import { gitLog } from '../lib/gitLog.ts'
 import { DiffFile, gitDiff } from '../lib/wipParseDiff.ts'
 import { CommitUI } from './log.tsx'
+import { Layout } from '../components/Layout.tsx'
 
 export const config: RouteConfig = {
   routeOverride: '/commit/:ref',
@@ -31,39 +32,41 @@ export const handler: Handlers<DataStruct> = {
 export default function Blob({ data, params }: PageProps<DataStruct>) {
   const { commit, diff } = data
   return (
-    <div class={tw`bg-gray-50`}>
-      <CommitUI commit={commit} />
-      {diff.map((diffFile) => (
-        <div
-          class={tw`bg-white mx-8 my-10 border-2 border-blue-400 rounded-xl overflow-hidden shadow-xl`}
-        >
-          <div class={tw`p-3 bg-blue-50 flex justify-between`}>
-            <div class={tw`font-bold`}>{diffFile.filename}</div>
+    <Layout title={`Commit: ${commit.summary}`}>
+      <div class={tw`bg-gray-50`}>
+        <CommitUI commit={commit} />
+        {diff.map((diffFile) => (
+          <div
+            class={tw`bg-white mx-8 my-10 border-2 border-blue-400 rounded-xl overflow-hidden shadow-xl`}
+          >
+            <div class={tw`p-3 bg-blue-50 flex justify-between`}>
+              <div class={tw`font-bold`}>{diffFile.filename}</div>
+              <div>
+                {!diffFile.isNew && (
+                  <a href={`/blob/${commit.parent}/${diffFile.filename}`}>
+                    before
+                  </a>
+                )}
+                {!diffFile.isNew && !diffFile.isDeleted && <span> / </span>}
+                {!diffFile.isDeleted && (
+                  <a href={`/blob/${commit.sha}/${diffFile.filename}`}>after</a>
+                )}
+              </div>
+            </div>
             <div>
-              {!diffFile.isNew && (
-                <a href={`/blob/${commit.parent}/${diffFile.filename}`}>
-                  before
-                </a>
-              )}
-              {!diffFile.isNew && !diffFile.isDeleted && <span> / </span>}
-              {!diffFile.isDeleted && (
-                <a href={`/blob/${commit.sha}/${diffFile.filename}`}>after</a>
-              )}
+              {diffFile.lines.map((line) => (
+                <pre class={tw`${diffLineClass(line)}`}>
+                  <span class={tw`select-none text-gray-500`}>
+                    {line.charAt(0)}
+                  </span>
+                  {line.substring(1)}
+                </pre>
+              ))}
             </div>
           </div>
-          <div>
-            {diffFile.lines.map((line) => (
-              <pre class={tw`${diffLineClass(line)}`}>
-                <span class={tw`select-none text-gray-500`}>
-                  {line.charAt(0)}
-                </span>
-                {line.substring(1)}
-              </pre>
-            ))}
-          </div>
-        </div>
-      ))}
-    </div>
+        ))}
+      </div>
+    </Layout>
   )
 }
 

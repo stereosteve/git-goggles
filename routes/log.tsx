@@ -5,6 +5,7 @@ import { Handlers, PageProps, RouteConfig } from '$fresh/server.ts'
 import { gitLog } from '../lib/gitLog.ts'
 import { Commit } from '../lib/gitcli.ts'
 import { Breadcrumbs } from '../components/Breadcrumbs.tsx'
+import { Layout } from '../components/Layout.tsx'
 
 export const config: RouteConfig = {
   routeOverride: '/commits/:ref/:path*',
@@ -27,7 +28,7 @@ export const handler: Handlers<Commit[]> = {
 export default function Log({ data, params }: PageProps<Commit[]>) {
   const log = data
   return (
-    <div>
+    <Layout title={`commits`}>
       <Breadcrumbs params={params} />
       <div>{log.length} commits</div>
       <div>
@@ -35,7 +36,7 @@ export default function Log({ data, params }: PageProps<Commit[]>) {
           <CommitUI commit={commit} />
         ))}
       </div>
-    </div>
+    </Layout>
   )
 }
 

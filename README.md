@@ -18,3 +18,8 @@ This will watch the project directory and restart as necessary.
 - tree / blob should show head commit info (based on ref param)
 - ui design / nav stuff
 - commit screen: parse diff, list changed files, etc.
+
+## Bugs
+
+- viewing initial commit breaks because of `diff sha~1 sha` has no parent maybe
+  should just do `git show`
