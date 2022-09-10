@@ -38,26 +38,29 @@ export default function Log({ data, params }: PageProps<Commit[]>) {
 }
 
 export function CommitUI({ commit }: { commit: Commit }) {
+  const commitDate = new Date(commit.authorTime * 1000)
   return (
-    <div style={{ margin: 20, border: '2px solid purple' }}>
+    <div class="p-2 border">
+      <div class="font-bold">{commit.summary}</div>
+
       <div>
-        Commit: <a href={`/commit/${commit.sha}`}>{commit.sha}</a>
-      </div>
-      <div>
-        Browse: <a href={`/stuff/tree/${commit.sha}`}>{commit.tree}</a>
-      </div>
-      <div>
-        WHO:
-        <a href={`?author=${encodeURIComponent(commit.author)}`}>
+        <a
+          href={`?author=${encodeURIComponent(commit.author)}`}
+          title={commit.authorEmail}
+        >
           {commit.author}
         </a>
-        -- {commit.authorEmail}
-      </div>
-      <div>
-        WHEN: {commit.authorTime} {commit.authorTz}
+        <span> &middot; </span>
+        <span>
+          {commitDate.toLocaleDateString()} {commitDate.toLocaleTimeString()}
+        </span>
       </div>
 
-      <pre>{commit.summary}</pre>
+      <div class="text-xs">
+        <a href={`/commit/${commit.sha}`}>show</a>
+        <span> &middot; </span>
+        <a href={`/stuff/tree/${commit.sha}`}>browse</a>
+      </div>
     </div>
   )
 }

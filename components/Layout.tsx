@@ -7,7 +7,7 @@ type LayoutProps = {
 
 export function Layout({ title, children }: LayoutProps) {
   return (
-    <div class="border-t-8 border-purple-800">
+    <div class="border-t-8 border-green-200">
       <Head>
         <title>{title}</title>
       </Head>

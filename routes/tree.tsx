@@ -1,6 +1,7 @@
 import { Handlers, PageProps, RouteConfig } from '$fresh/server.ts'
 import { gitLsTree, TreeNode } from '../lib/gitLsTree.ts'
 import { Breadcrumbs } from '../components/Breadcrumbs.tsx'
+import { Layout } from '../components/Layout.tsx'
 
 export const config: RouteConfig = {
   routeOverride: '/:stuff*/tree/:ref/:path*',
@@ -37,7 +38,7 @@ export default function Tree({ data, url, params }: PageProps<TreeNode[]>) {
   const files = tree.filter((n) => n.kind === 'blob')
 
   return (
-    <div>
+    <Layout title={`tree: ${path}`}>
       <Breadcrumbs params={params} />
       <table>
         <tbody>
@@ -69,6 +70,6 @@ export default function Tree({ data, url, params }: PageProps<TreeNode[]>) {
           ))}
         </tbody>
       </table>
-    </div>
+    </Layout>
   )
 }

@@ -4,8 +4,7 @@ import { gitcli } from '../lib/gitcli.ts'
 export const handler: Handlers<string> = {
   async GET(req, ctx) {
     // NB this won't work on "baseless" checkout...
-    const branchOutput = await gitcli(['branch'])
-    const branch = branchOutput.replace('* ', '')
+    const branch = await gitcli(['branch', '--show-current'])
     return ctx.render(branch)
   },
 }
