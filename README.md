@@ -23,3 +23,10 @@ This will watch the project directory and restart as necessary.
 
 - viewing initial commit breaks because of `diff sha~1 sha` has no parent maybe
   should just do `git show`
+
+## Fresh Bugs
+
+- tailwind classes used in components that are dynamically rendered in browser
+  only go missing
+- return null from an island causes Uncaught TypeError: Cannot read properties
+  of undefined (reading 'nextSibling')

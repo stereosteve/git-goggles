@@ -3,6 +3,7 @@ import { gitLog } from '../lib/gitLog.ts'
 import { Commit } from '../lib/gitcli.ts'
 import { Breadcrumbs } from '../components/Breadcrumbs.tsx'
 import { Layout } from '../components/Layout.tsx'
+import CommitPreview from '../islands/CommitPreview.tsx'
 
 export const config: RouteConfig = {
   routeOverride: '/commits/:ref/:path*',
@@ -25,13 +26,18 @@ export const handler: Handlers<Commit[]> = {
 export default function Log({ data, params }: PageProps<Commit[]>) {
   const log = data
   return (
-    <Layout title={`commits`}>
+    <Layout title={`commits`} tw="border-red-500">
       <Breadcrumbs params={params} />
       <div>{log.length} commits</div>
-      <div>
-        {data.map((commit) => (
-          <CommitUI commit={commit} />
-        ))}
+      <div class="flex max-h-screen">
+        <div class="overflow-scroll border-2 border-blue-500 max-w-lg">
+          {data.map((commit) => (
+            <CommitUI commit={commit} />
+          ))}
+        </div>
+        <div class="flex-grow overflow-y-scroll">
+          <CommitPreview />
+        </div>
       </div>
     </Layout>
   )
@@ -40,8 +46,10 @@ export default function Log({ data, params }: PageProps<Commit[]>) {
 export function CommitUI({ commit }: { commit: Commit }) {
   const commitDate = new Date(commit.authorTime * 1000)
   return (
-    <div class="p-2 border">
-      <div class="font-bold">{commit.summary}</div>
+    <div class="p-2 border whitespace-nowrap">
+      <a class="block font-bold" href={`#${commit.sha}`}>
+        {commit.summary}
+      </a>
 
       <div>
         <a
