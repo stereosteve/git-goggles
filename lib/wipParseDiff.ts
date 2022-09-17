@@ -13,7 +13,7 @@ export type DiffFile = {
   lines: string[]
 }
 
-function parseDiff(diffOutput: string) {
+export function parseDiff(diffOutput: string) {
   const diffFiles: DiffFile[] = []
   let currentFile: DiffFile
 
