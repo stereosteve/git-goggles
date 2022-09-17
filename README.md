@@ -1,4 +1,12 @@
-# fresh project
+# git-goggles
+
+Web UI to browse a local git repo.
+
+CLI instructions coming soon... meanwhile, clone repo and run:
+
+```
+deno run -A main.ts ~/path/to/repo
+```
 
 ### Usage
 
