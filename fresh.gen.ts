@@ -8,12 +8,11 @@ import * as $1 from "./routes/api/gitDiff.ts";
 import * as $2 from "./routes/blame.tsx";
 import * as $3 from "./routes/blob.tsx";
 import * as $4 from "./routes/commit.tsx";
-import * as $5 from "./routes/grid3.tsx";
-import * as $6 from "./routes/history.tsx";
-import * as $7 from "./routes/index.tsx";
-import * as $8 from "./routes/log.tsx";
-import * as $9 from "./routes/show.tsx";
-import * as $10 from "./routes/tree.tsx";
+import * as $5 from "./routes/history.tsx";
+import * as $6 from "./routes/index.tsx";
+import * as $7 from "./routes/log.tsx";
+import * as $8 from "./routes/show.tsx";
+import * as $9 from "./routes/tree.tsx";
 import * as $$0 from "./islands/CommitPreview.tsx";
 import * as $$1 from "./islands/HistoryApp.tsx";
 
@@ -24,12 +23,11 @@ const manifest = {
     "./routes/blame.tsx": $2,
     "./routes/blob.tsx": $3,
     "./routes/commit.tsx": $4,
-    "./routes/grid3.tsx": $5,
-    "./routes/history.tsx": $6,
-    "./routes/index.tsx": $7,
-    "./routes/log.tsx": $8,
-    "./routes/show.tsx": $9,
-    "./routes/tree.tsx": $10,
+    "./routes/history.tsx": $5,
+    "./routes/index.tsx": $6,
+    "./routes/log.tsx": $7,
+    "./routes/show.tsx": $8,
+    "./routes/tree.tsx": $9,
   },
   islands: {
     "./islands/CommitPreview.tsx": $$0,
