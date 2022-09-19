@@ -1,12 +1,16 @@
 package main
 
 import (
-	"fmt"
+	"embed"
+	"io/fs"
 	"log"
 	"net/http"
 	"os/exec"
 	"strings"
 )
+
+//go:embed dist
+var distFiles embed.FS
 
 func git(w http.ResponseWriter, req *http.Request) {
 	args := strings.Split(req.URL.Query().Get("args"), ",")
@@ -27,19 +31,24 @@ func git(w http.ResponseWriter, req *http.Request) {
 	}
 }
 
-func headers(w http.ResponseWriter, req *http.Request) {
-
-	for name, headers := range req.Header {
-		for _, h := range headers {
-			fmt.Fprintf(w, "%v: %v\n", name, h)
-		}
-	}
-}
-
 func main() {
 
 	http.HandleFunc("/git", git)
-	http.HandleFunc("/headers", headers)
+
+	dist, err := fs.Sub(distFiles, "dist")
+	if err != nil {
+		panic(err)
+	}
+
+	fs := http.FileServer(http.FS(dist))
+
+	http.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
+		accept := req.Header.Get("Accept")
+		if strings.Contains(accept, "html") {
+			req.URL.Path = "/"
+		}
+		fs.ServeHTTP(w, req)
+	})
 
 	http.ListenAndServe(":8090", nil)
 }
