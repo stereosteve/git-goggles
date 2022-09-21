@@ -1,25 +1,52 @@
-import { useLoaderData } from "react-router-dom";
-import { Commit } from "./parseGit";
+import { useEffect, useMemo, useState } from "react";
+import { useLoaderData, useLocation, useNavigate } from "react-router-dom";
+import { callGit } from "./junk";
+import { Commit, parseDiff } from "./parseGit";
 
 export function GitLog() {
   const log = useLoaderData() as Commit[];
+  const location = useLocation();
+  const [rawDiff, setRawDiff] = useState("");
+
+  const commit = useMemo(() => {
+    const currentSha = location.hash.replace("#", "");
+    return log.find((c) => c.sha == currentSha);
+  }, [location]);
+
+  useEffect(() => {
+    if (!commit) return;
+    const parent = commit.parent || "4b825dc642cb6eb9a060e54bf8d69288fbee4904";
+    callGit(["diff", "--no-prefix", parent, commit.sha]).then((txt) => {
+      setRawDiff(txt);
+      const diff = parseDiff(txt);
+      console.log(diff);
+    });
+  }, [commit]);
+
+  useEffect(() => {
+    console.log("location", location, commit);
+  }, [location]);
 
   return (
-    <div>
-      <h1>git log 2</h1>
-      <pre>
+    <div style={{ display: "flex", whiteSpace: "nowrap" }}>
+      <div>
         {log.map((commit) => (
           <div key={commit.sha}>
             <CommitUI commit={commit} />
           </div>
         ))}
-      </pre>
+      </div>
+      <div>
+        <pre>{rawDiff}</pre>
+      </div>
     </div>
   );
 }
 
 export function CommitUI({ commit }: { commit: Commit }) {
   const commitDate = new Date(commit.authorTime * 1000);
+  const navigate = useNavigate();
+
   return (
     <div className="p-2 border whitespace-nowrap">
       <a className="block font-bold" href={`#${commit.sha}`}>
