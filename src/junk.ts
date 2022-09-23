@@ -1,8 +1,22 @@
-import useSWRImmutable from "swr/immutable";
+import { QueryClient, QueryFunctionContext } from "@tanstack/react-query";
 
-export async function callGit(args: string[]) {
+export const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 100000,
+      refetchOnWindowFocus: false,
+      // keepPreviousData: true,
+    },
+  },
+});
+
+export async function callGit(args: string[], ctx?: QueryFunctionContext) {
   const url = buildUrl(args);
-  const resp = await fetch(url);
+  const resp = await fetch(url, {
+    // @ts-ignore
+    priority: "low",
+    signal: ctx?.signal,
+  });
   const txt = await resp.text();
   if (resp.status != 200) {
     throw new Error(`${resp.status}: ${txt}`);
@@ -17,8 +31,4 @@ function buildUrl(args: string[]) {
     searchParams.append("args", arg);
   }
   return `/git?${searchParams.toString()}`;
-}
-
-export function useGit(args: string[]) {
-  return useSWRImmutable(buildUrl(args), (u) => fetch(u).then((r) => r.text()));
 }

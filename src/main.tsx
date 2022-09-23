@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import "./index.css";
+// import "./index.css";
 import {
   createBrowserRouter,
   Link,
@@ -8,21 +8,24 @@ import {
   RouterProvider,
   ScrollRestoration,
 } from "react-router-dom";
-import { parseCommits } from "./parseGit";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { parseCommits, parseTree } from "./parseGit";
 import { GitLog } from "./log";
 import { GitTree } from "./tree";
-import { callGit } from "./junk";
+import { callGit, queryClient } from "./junk";
 import { GitBlob } from "./blob";
 import { GitBlame } from "./blame";
-import { SWRConfig } from "swr";
+import { tw } from "twind";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: (
       <div>
-        <Link to="/tree/HEAD">Tree</Link> <Link to="/log">Log</Link>
-        <hr />
+        <div className={tw`bg-green-50 h-12 flex items-center px-4 space-x-2`}>
+          <Link to="/tree/HEAD">Tree</Link> <Link to="/log">Log</Link>
+        </div>
+
         <Outlet />
         <ScrollRestoration />
       </div>
@@ -35,7 +38,7 @@ const router = createBrowserRouter([
           const ref = params.ref || "HEAD";
           const prefix = params["*"] || ".";
           const txt = await callGit(["ls-tree", "-l", ref, prefix + "/"]);
-          return txt;
+          return parseTree(txt);
         },
       },
       {
@@ -78,7 +81,9 @@ const router = createBrowserRouter([
 ]);
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
-  <React.StrictMode>
+  // <React.StrictMode>
+  <QueryClientProvider client={queryClient}>
     <RouterProvider router={router} />
-  </React.StrictMode>
+  </QueryClientProvider>
+  // </React.StrictMode>
 );

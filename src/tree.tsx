@@ -1,19 +1,19 @@
+import { useQuery } from "@tanstack/react-query";
 import { Link, useLoaderData, useParams } from "react-router-dom";
-import { useGit } from "./junk";
-import { parseCommits, parseTree } from "./parseGit";
+import { tw } from "twind";
+import { callGit } from "./junk";
+import { parseCommits, parseTree, TreeNode } from "./parseGit";
 
 export function GitTree() {
   const params = useParams();
-  const txt = useLoaderData() as string;
+  const tree = useLoaderData() as TreeNode[];
 
   const ref = params.ref;
   const path = params["*"] || "";
   const treeRoot = `/tree/${ref}/`;
 
-  const tree = parseTree(txt);
   const dirs = tree.filter((n) => n.kind === "tree");
   const files = tree.filter((n) => n.kind === "blob");
-  console.log(tree);
 
   return (
     <div>
@@ -61,12 +61,13 @@ export function GitTree() {
 function LatestCommitInfo({ path }: { path: string }) {
   const { ref } = useParams();
   const args = ["log", ref!, "--format=raw", "-n", "1", "--", path];
-  const { data } = useGit(args);
+  const { data } = useQuery(args, async function (ctx) {
+    const raw = await callGit(args, ctx);
+    const commits = parseCommits(raw);
+    return commits[0];
+  });
   if (!data) return null;
-  const commits = parseCommits(data);
-  const commit = commits[0];
-  if (!commit) return null;
-  return <div>{commit.summary}</div>;
+  return <div>{data.summary}</div>;
 }
 
 export function Breadcrumbs({ params }: { params: Record<string, string> }) {
@@ -77,7 +78,7 @@ export function Breadcrumbs({ params }: { params: Record<string, string> }) {
   const crumbs2 = segments.map((seg, idx) => (
     <Link
       key={idx}
-      className="m-2 text-purple-800"
+      className={tw`m-2 text-purple-800`}
       style={{ margin: 10 }}
       to={treeRoot + segments.slice(0, idx + 1).join("/")}
     >
