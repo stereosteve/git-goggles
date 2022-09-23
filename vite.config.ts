@@ -7,6 +7,10 @@ export default defineConfig({
   server: {
     proxy: {
       "/git": "http://localhost:8090",
+      "/gitws": {
+        target: "http://localhost:8090",
+        ws: true,
+      },
     },
   },
 });

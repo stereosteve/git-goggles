@@ -3,13 +3,30 @@ import { QueryClient, QueryFunctionContext } from "@tanstack/react-query";
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 100000,
+      staleTime: Infinity,
       refetchOnWindowFocus: false,
-      // keepPreviousData: true,
     },
   },
 });
 
+///////
+// websocket stuff
+
+const webSocket = new WebSocket(`ws://${window.location.host}/gitws`);
+
+webSocket.onmessage = (event) => {
+  const data = JSON.parse(event.data);
+  queryClient.setQueryData(data.args, data.output);
+};
+
+export function gitFire({ queryKey }: { queryKey: string[] }) {
+  // todo: check ready
+  webSocket.send(JSON.stringify(queryKey));
+  return "";
+}
+
+/////////
+// http stuff
 export async function callGit(args: string[], ctx?: QueryFunctionContext) {
   const url = buildUrl(args);
   const resp = await fetch(url, {

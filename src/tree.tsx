@@ -1,7 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
+import { useMemo } from "react";
 import { Link, useLoaderData, useParams } from "react-router-dom";
 import { tw } from "twind";
-import { callGit } from "./junk";
+import { callGit, gitFire } from "./junk";
 import { parseCommits, parseTree, TreeNode } from "./parseGit";
 
 export function GitTree() {
@@ -61,13 +62,23 @@ export function GitTree() {
 function LatestCommitInfo({ path }: { path: string }) {
   const { ref } = useParams();
   const args = ["log", ref!, "--format=raw", "-n", "1", "--", path];
-  const { data } = useQuery(args, async function (ctx) {
-    const raw = await callGit(args, ctx);
-    const commits = parseCommits(raw);
+
+  // const { data } = useQuery(args, async function (ctx) {
+  //   const raw = await callGit(args, ctx);
+  //   const commits = parseCommits(raw);
+  //   return commits[0];
+  // });
+
+  const { data } = useQuery(args, gitFire);
+
+  const commit = useMemo(() => {
+    if (!data) return;
+    const commits = parseCommits(data);
     return commits[0];
-  });
-  if (!data) return null;
-  return <div>{data.summary}</div>;
+  }, [data]);
+
+  if (!commit) return null;
+  return <div>{commit.summary}</div>;
 }
 
 export function Breadcrumbs({ params }: { params: Record<string, string> }) {

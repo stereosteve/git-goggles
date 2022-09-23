@@ -2,6 +2,7 @@ package main
 
 import (
 	"embed"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"io/fs"
@@ -10,6 +11,9 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+
+	"github.com/gobwas/ws"
+	"github.com/gobwas/ws/wsutil"
 )
 
 var (
@@ -39,6 +43,67 @@ func git(w http.ResponseWriter, req *http.Request) {
 	}
 }
 
+type GitResponse struct {
+	Args   []string `json:"args"`
+	Error  string   `json:"error,omitempty"`
+	Output string   `json:"output"`
+}
+
+func gitws(w http.ResponseWriter, r *http.Request) {
+
+	conn, _, _, err := ws.UpgradeHTTP(r, w)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+
+	go func() {
+		defer conn.Close()
+
+		for {
+			msg, op, err := wsutil.ReadClientData(conn)
+			if err != nil {
+				log.Println("ws read err", err)
+				return
+			}
+
+			var args []string
+			json.Unmarshal(msg, &args)
+
+			// log.Println("[ws] git", args)
+
+			go func() {
+
+				cmd := exec.Command("git", args...)
+				cmd.Dir = cwd
+
+				output, err := cmd.CombinedOutput()
+
+				response := GitResponse{
+					Args:   args,
+					Output: string(output),
+				}
+
+				if err != nil {
+					response.Error = err.Error()
+				}
+
+				respJson, err := json.Marshal(&response)
+				if err != nil {
+					panic(err)
+				}
+
+				err = wsutil.WriteServerMessage(conn, op, respJson)
+				if err != nil {
+					log.Println("ws write err", err)
+					return
+				}
+			}()
+
+		}
+	}()
+}
+
 func main() {
 
 	var listenFlag string
@@ -60,6 +125,7 @@ func main() {
 	fmt.Printf("listen: %s, cwd: %s \n", listenFlag, cwd)
 
 	http.HandleFunc("/git", git)
+	http.HandleFunc("/gitws", gitws)
 
 	dist, err := fs.Sub(distFiles, "dist")
 	if err != nil {
