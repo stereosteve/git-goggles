@@ -1,4 +1,4 @@
-module gitui
+module goggles
 
 go 1.19
 

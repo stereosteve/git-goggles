@@ -142,5 +142,7 @@ func main() {
 		fs.ServeHTTP(w, req)
 	})
 
-	http.ListenAndServe(listenFlag, nil)
+	if err := http.ListenAndServe(listenFlag, nil); err != nil {
+		log.Fatal(err)
+	}
 }

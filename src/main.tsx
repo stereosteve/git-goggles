@@ -23,8 +23,11 @@ const router = createBrowserRouter([
     element: (
       <div>
         <div
-          className={`bg-green-50 dark:bg-gray-900 h-12 flex items-center px-4 space-x-2`}
+          className={`bg-purple-800 text-purple-200 h-12 flex items-center px-4 space-x-2 text-lg`}
         >
+          <Link to="/" className="font-bold">
+            Goggles
+          </Link>{" "}
           <Link to="/tree/HEAD">Tree</Link> <Link to="/log">Log</Link>
         </div>
 

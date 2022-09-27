@@ -24,9 +24,9 @@ export function GitLog() {
   }, [currentCommit]);
 
   return (
-    <div className={`flex absolute  top-12 bottom-12 w-full`}>
+    <div className={`flex absolute  top-12 bottom-0 w-full`}>
       <div
-        className={`whitespace-nowrap overflow-y-scroll overflow-x-hidden w-1/3`}
+        className={`whitespace-nowrap overflow-y-scroll overflow-x-hidden w-1/4 border-r`}
       >
         {log.map((commit) => (
           <div
@@ -40,7 +40,7 @@ export function GitLog() {
           </div>
         ))}
       </div>
-      <div ref={panelRef} className={`flex-grow w-2/3 overflow-scroll`}>
+      <div ref={panelRef} className={`flex-grow w-3/4 overflow-scroll`}>
         {currentCommit && <DiffUI commit={currentCommit} />}
       </div>
     </div>
@@ -94,7 +94,7 @@ export function DiffUI({ commit }: { commit: Commit }) {
   if (!data) return null;
 
   return (
-    <div>
+    <div className="p-2">
       {data.map((diffFile, idx) => (
         <div
           key={idx}
