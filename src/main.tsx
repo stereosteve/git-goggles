@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-// import "./index.css";
+import "./index.css";
 import {
   createBrowserRouter,
   Link,
@@ -10,19 +10,21 @@ import {
 } from "react-router-dom";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { parseCommits, parseTree } from "./parseGit";
-import { GitLog } from "./log";
-import { GitTree } from "./tree";
+import { GitLog } from "./screens/log";
+import { GitTree } from "./screens/tree";
 import { callGit, queryClient } from "./junk";
-import { GitBlob } from "./blob";
-import { GitBlame } from "./blame";
-import { tw } from "twind";
+import { GitBlob } from "./screens/blob";
+import { GitBlame } from "./screens/blame";
+import { Home } from "./screens/home";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: (
       <div>
-        <div className={tw`bg-green-50 h-12 flex items-center px-4 space-x-2`}>
+        <div
+          className={`bg-green-50 dark:bg-gray-900 h-12 flex items-center px-4 space-x-2`}
+        >
           <Link to="/tree/HEAD">Tree</Link> <Link to="/log">Log</Link>
         </div>
 
@@ -31,6 +33,10 @@ const router = createBrowserRouter([
       </div>
     ),
     children: [
+      {
+        path: "/",
+        element: <Home />,
+      },
       {
         path: "/tree/:ref/*",
         element: <GitTree />,

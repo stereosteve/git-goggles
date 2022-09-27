@@ -1,9 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { Link, useLoaderData, useParams } from "react-router-dom";
-import { tw } from "twind";
-import { callGit, gitFire } from "./junk";
-import { parseCommits, parseTree, TreeNode } from "./parseGit";
+import { callGit, gitFire } from "../junk";
+import { parseCommits, parseTree, TreeNode } from "../parseGit";
 
 export function GitTree() {
   const params = useParams();
@@ -89,7 +88,7 @@ export function Breadcrumbs({ params }: { params: Record<string, string> }) {
   const crumbs2 = segments.map((seg, idx) => (
     <Link
       key={idx}
-      className={tw`m-2 text-purple-800`}
+      className={`m-2 text-purple-800`}
       style={{ margin: 10 }}
       to={treeRoot + segments.slice(0, idx + 1).join("/")}
     >

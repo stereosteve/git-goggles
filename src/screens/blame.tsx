@@ -1,5 +1,5 @@
 import { useLoaderData, useParams } from "react-router-dom";
-import { parseBlame } from "./parseGit";
+import { parseBlame } from "../parseGit";
 
 export function GitBlame() {
   const { ref, "*": path } = useParams();

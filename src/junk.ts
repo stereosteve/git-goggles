@@ -12,16 +12,36 @@ export const queryClient = new QueryClient({
 ///////
 // websocket stuff
 
-const webSocket = new WebSocket(`ws://${window.location.host}/gitws`);
+let ws: WebSocket;
 
-webSocket.onmessage = (event) => {
-  const data = JSON.parse(event.data);
-  queryClient.setQueryData(data.args, data.output);
-};
+function connect() {
+  ws = new WebSocket(`ws://${window.location.host}/gitws`);
+
+  ws.onopen = function () {
+    console.log("ws open");
+  };
+
+  ws.onmessage = (event) => {
+    const data = JSON.parse(event.data);
+    queryClient.setQueryData(data.args, data.output);
+  };
+
+  ws.onclose = function (e) {
+    console.log("ws close", e.reason);
+    setTimeout(connect, 1000);
+  };
+
+  ws.onerror = function (err) {
+    console.error(err);
+    ws.close();
+  };
+}
+
+connect();
 
 export function gitFire({ queryKey }: { queryKey: string[] }) {
   // todo: check ready
-  webSocket.send(JSON.stringify(queryKey));
+  ws.send(JSON.stringify(queryKey));
   return "";
 }
 
