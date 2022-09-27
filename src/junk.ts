@@ -50,8 +50,6 @@ export function gitFire({ queryKey }: { queryKey: string[] }) {
 export async function callGit(args: string[], ctx?: QueryFunctionContext) {
   const url = buildUrl(args);
   const resp = await fetch(url, {
-    // @ts-ignore
-    priority: "low",
     signal: ctx?.signal,
   });
   const txt = await resp.text();

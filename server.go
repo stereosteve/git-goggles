@@ -7,10 +7,13 @@ import (
 	"fmt"
 	"io/fs"
 	"log"
+	"net"
 	"net/http"
 	"os"
 	"os/exec"
+	"runtime"
 	"strings"
+	"time"
 
 	"github.com/gobwas/ws"
 	"github.com/gobwas/ws/wsutil"
@@ -20,6 +23,7 @@ var (
 	cwd string
 )
 
+//go:generate pnpm build
 //go:embed dist
 var distFiles embed.FS
 
@@ -107,22 +111,29 @@ func gitws(w http.ResponseWriter, r *http.Request) {
 func main() {
 
 	var listenFlag string
+	var devFlag bool
 
 	flag.Usage = func() {
 		fmt.Fprintf(os.Stderr, "\ngit-goggles ~/path/to/repo \n\n")
 		flag.PrintDefaults()
 		fmt.Fprintf(os.Stderr, "\n\n")
 	}
-	flag.StringVar(&listenFlag, "listen", ":8090", "address to listen on")
+	flag.StringVar(&listenFlag, "listen", ":0", "address to listen on")
+	flag.BoolVar(&devFlag, "dev", false, "listen on fixed port and don't open browser")
 	flag.Parse()
 	flagArgs := flag.Args()
+
+	// listen on random port
+	if devFlag {
+		listenFlag = ":8090"
+	}
 
 	// default arg is cwd
 	if len(flagArgs) > 0 {
 		cwd = flagArgs[0]
 	}
 
-	fmt.Printf("listen: %s, cwd: %s \n", listenFlag, cwd)
+	log.Printf("dev: %v, listen: %s, cwd: %s \n", devFlag, listenFlag, cwd)
 
 	http.HandleFunc("/git", git)
 	http.HandleFunc("/gitws", gitws)
@@ -135,14 +146,49 @@ func main() {
 	fs := http.FileServer(http.FS(dist))
 	http.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
 		accept := req.Header.Get("Accept")
-		log.Println(req.URL.Path, accept)
+		// log.Println(req.URL.Path, accept)
 		if strings.Contains(accept, "html") {
 			req.URL.Path = "/"
 		}
 		fs.ServeHTTP(w, req)
 	})
 
-	if err := http.ListenAndServe(listenFlag, nil); err != nil {
+	listener, err := net.Listen("tcp", listenFlag)
+	if err != nil {
+		panic(err)
+	}
+
+	port := listener.Addr().(*net.TCPAddr).Port
+	addr := fmt.Sprintf("http://localhost:%d", port)
+	log.Printf("starting on %s \n", addr)
+
+	if !devFlag {
+		go openbrowser(addr)
+	}
+
+	if err := http.Serve(listener, nil); err != nil {
 		log.Fatal(err)
 	}
+}
+
+// https://gist.github.com/hyg/9c4afcd91fe24316cbf0
+func openbrowser(url string) {
+	time.Sleep(10 * time.Millisecond)
+
+	var err error
+
+	switch runtime.GOOS {
+	case "linux":
+		err = exec.Command("xdg-open", url).Start()
+	case "windows":
+		err = exec.Command("rundll32", "url.dll,FileProtocolHandler", url).Start()
+	case "darwin":
+		err = exec.Command("open", url).Start()
+	default:
+		err = fmt.Errorf("unsupported platform")
+	}
+	if err != nil {
+		log.Fatal(err)
+	}
+
 }

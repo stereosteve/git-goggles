@@ -26,3 +26,7 @@ dist-ssr
 server
 gitui
 goggles
+
+dist/
+builds/
+.github/release.sh
